@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Oreon Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#f4f4f4] text-black min-h-screen p-10 font-sans">
+  <div class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-xl">
+    <h1 class="text-2xl font-bold mb-6">Waitlist Emails</h1>
+    <table class="w-full border">
+      <thead>
+        <tr class="bg-gray-100 text-left">
+          <th class="p-3 border">#</th>
+          <th class="p-3 border">Email</th>
+          <th class="p-3 border">Date Joined</th>
+        </tr>
+      </thead>
+      <tbody id="waitlist-body">
+        <!-- Fetched rows will appear here -->
+      </tbody>
+    </table>
+
+    <button onclick="downloadCSV()"
+            class="mt-6 bg-green-600 text-white px-5 py-2 rounded-full shadow hover:bg-green-700">
+      Download CSV
+    </button>
+  </div>
+
+  <script>
+    async function fetchWaitlist() {
+      const res = await fetch('/api/waitlist');
+      const data = await res.json();
+
+      const tbody = document.getElementById('waitlist-body');
+      tbody.innerHTML = data.map((entry, index) => `
+        <tr class="border-t">
+          <td class="p-3 border">${index + 1}</td>
+          <td class="p-3 border">${entry.email}</td>
+          <td class="p-3 border">${new Date(entry.date).toLocaleString()}</td>
+        </tr>
+      `).join('');
+    }
+
+    function downloadCSV() {
+      fetch('/api/waitlist')
+        .then(res => res.json())
+        .then(data => {
+          const rows = [["Email", "Date"]];
+          data.forEach(entry => rows.push([entry.email, entry.date]));
+
+          const csv = rows.map(r => r.join(',')).join('\\n');
+          const blob = new Blob([csv], { type: 'text/csv' });
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = 'waitlist.csv';
+          link.click();
+        });
+    }
+
+    fetchWaitlist();
+  </script>
+</body>
+</html>
