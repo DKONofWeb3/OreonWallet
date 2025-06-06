@@ -47,15 +47,6 @@ Admin Panel	HTML + Fetch API
 
 ---
 
-🖼 Screenshots
-
-> (Add screenshots of your waitlist form, admin dashboard, and email list)
-
-
-
-
----
-
 📂 Project Structure
 
 oreon-waitlist/
